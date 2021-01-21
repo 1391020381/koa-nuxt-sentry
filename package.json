@@ -1,0 +1,31 @@
+{
+  "name": "koa-nuxt",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "local": "cross-env NODE_ENV=local nodemon ./server/index.js",
+    "build": "nuxt build",
+    "start": "cross-env NODE_ENV=production node server.js",
+    "generate": "nuxt generate",
+    "precommit": "npm run lint",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore ."
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.12.5",
+    "@nuxtjs/dotenv": "^1.4.1",
+    "@nuxtjs/toast": "^3.3.1",
+    "core-js": "^3.8.2",
+    "koa": "^2.13.1",
+    "nuxt": "^2.14.12",
+    "pm2": "^4.5.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^7.4.1",
+    "less": "^4.1.0",
+    "less-loader": "^7.2.1",
+    "nodemon": "^2.0.7"
+  }
+}

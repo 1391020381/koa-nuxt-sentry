@@ -1,0 +1,13 @@
+//文字截取 省略号
+.text-ellipsis(){
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .text-ellipsis(@w){
+    .inline-block();
+    max-width: @w;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }

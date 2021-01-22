@@ -20,13 +20,8 @@ export default { // this.$toast.error('服务器开小差啦~~')
  async asyncData({req,params,query,$axios,error,redirect}){
      try{
          let source = req.headers['user-agent']
-        let isWeChat = source.indexOf("MicroMessenger") !== -1
-        console.log('scanOrderInfo-参数:',JSON.stringify({
-           orderNo: query.orderNo,
-           code: query.code,
-           payType: isWeChat == true ? 'wechat' : 'alipay',
-           host: req.origin // open域名
-         }))
+        let isWeChat = source.indexOf("MicroMessenger") != -1
+        console.log('source:',JSON.stringify(source),isWeChat)
        // let isAliPay = source.indexOf("AlipayClient") !== -1
          const { code,data,message } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
            orderNo: query.orderNo,
@@ -34,7 +29,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
            payType: isWeChat == true ? 'wechat' : 'alipay',
            host: req.origin
          })
-       //  console.log('scanOrderInfo:',code,data,message)
+      console.log('scanOrderInfo:',code,data,message)
          if(code == 0){
             if(data.needRedirect){
               console.log('重定向')
@@ -50,10 +45,11 @@ export default { // this.$toast.error('服务器开小差啦~~')
               aliPayUrl:data.aliPayUrl
             }
          }else{ // 上报
-           
+           error({ statusCode: 500, code,message })
          }
      }catch(err){
         console.log('scanOrderInfo:',err)
+      //  error({ statusCode: 500, code,message })
      }
   },
   data() {
@@ -65,7 +61,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
   },
   head() {
     console.log('isWechat:',this.isWeChat)
-    if(!this.isWeChat){
+    if(this.isWeChat){
        return {
           title: "订单详情",
        }
@@ -123,14 +119,11 @@ export default { // this.$toast.error('服务器开小差啦~~')
                 function (res) {
                     console.log('wechatPay:', res)
                     if (res.err_msg == "get_brand_wcpay_request:ok") { // 支付成功
-                      //  getOrderStatus(orderNo)
+                      this.getOrderStatus(this.orderNo)
                     } else if (res.err_msg == "get_brand_wcpay_request:fail") { // 支付失败
                         console.log('wechatPay支付失败:', res)
-                        // $.toast({
-                        //     text: "支付失败",
-                        //     delay: 3000,
-                        // })
-                        // getOrderStatus(orderNo)
+                       this.$toast.error('支付失败')
+                        this.getOrderStatus(this.orderNo)
                     }
                 });
         }
@@ -157,13 +150,25 @@ export default { // this.$toast.error('服务器开小差啦~~')
             orderStr: orderStr
           }, function(res){
             console.log(res)
-            // ap.alert(res.resultCode);
+           // ap.alert(res.resultCode);
             if(res.resultCode == '9000'){
-              //  getOrderStatus(orderNo)
+              this.getOrderStatus(this.orderNo)
             }else{
 
             }
           })
+    },
+    getOrderStatus(orderNo) {
+        if (this.platformCode == 'm') { //m端跳转公共的支付空白页 然后跳相关的页面(m端付费文档微信浏览器)
+            let redirectUrl = this.host + "/node/payInfo?orderNo=" + orderNo + "&mark=wx";
+           // location.href = '/pay/payRedirect?redirectUrl=' + encodeURIComponent(redirectUrl);
+          //  语法:window.history.pushState(state, title, url);
+          window.history.pushState('m', '订单详情', redirectUrl)
+        } else { //直接跳结果 urlConfig
+           // location.href = '/pay/paymentresult?orderNo=' + orderNo
+            this.$router.replace({ path:'/pay/paymentresult',query:{orderNo}})
+        }
+
     }
   },
   computed:{

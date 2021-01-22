@@ -81,7 +81,8 @@ module.exports =  {
     register:[
       {
         options:{
-          type:'error'
+          type:'error',
+          duration: 2000
         }
       }
     ]

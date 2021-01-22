@@ -48,16 +48,17 @@
 
 <script>
 // http://open-ishare.iask.com.cn/pay/qr?orderNo=B20210121112552M0C175&isAutoRenew=1
+import orderApi from "../../api/order" 
 export default {
-     data() {
+  data() {
     return {
         orderInfo:{
-            orderStatus:2,
-            payType:'wechat',
-            payPrice:0.01,
-            orderTime:'2020.10.10',
-            payNo:'xxxxxxxxxxxxxxx',
-            goodsName:'合同'
+            orderStatus:'',
+            payType:'',
+            payPrice:'',
+            orderTime:'',
+            payNo:'',
+            goodsName:''
         }
     };
   },
@@ -65,6 +66,53 @@ export default {
     return {
       title: "订单结果页",
     };
+  },
+  mounted(){
+      this.getOrderInfo()
+  },
+  methods:{
+     async getOrderInfo(){
+      try{
+           const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo})
+           console.log(code,data,message)
+           if(code==0){
+              
+              this.orderInfo = Object.assign({},{
+                   orderStatus:data.orderStatus,
+                   payType:data.payType,
+                   payPrice:data.payPrice / 100,
+                   orderTime:data.orderTime?this.formatDate(new Date(data.orderTime)):'',
+                  payNo:data.payNo,
+                  goodsName:data.goodsName
+              })
+           }else{
+             console.log(code,data,message)
+            this.$toast.error(message)
+           }
+      }catch(err){  
+           console.log(err)
+           this.$toast.error(err.message)
+      }
+      
+    },
+   formatDate(date) {
+    var myyear = date.getFullYear();
+    var mymonth = date.getMonth() + 1;
+    var myweekday = date.getDate();
+ 
+    if (mymonth < 10) {
+        mymonth = "0" + mymonth;
+    }
+    if (myweekday < 10) {
+        myweekday = "0" + myweekday;
+    }
+    return (myyear + "-" + mymonth + "-" + myweekday);//想要什么格式都可以随便自己拼
+}
+  },
+  computed:{
+    orderNo:function(){
+      return this.$route.query.orderNo
+    }
   }
 }
 </script>

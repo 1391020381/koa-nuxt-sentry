@@ -10,7 +10,6 @@
             </li>
         </ul>
        <div class="pay-confirm" @click="confirmPayment">继续支付</div>
-       <div v-html="aliPayUrl" v-if="isAutoRenew!='1'"></div>
   </div>
 </template>
 
@@ -21,8 +20,6 @@ export default { // this.$toast.error('服务器开小差啦~~')
      try{
          let source = req.headers['user-agent']
         let isWeChat = source.indexOf("MicroMessenger") != -1
-        console.log('source:',JSON.stringify(source),isWeChat)
-       // let isAliPay = source.indexOf("AlipayClient") !== -1
          const { code,data,message } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
            orderNo: query.orderNo,
            code: query.code,
@@ -48,8 +45,8 @@ export default { // this.$toast.error('服务器开小差啦~~')
            error({ statusCode: 500, code,message })
          }
      }catch(err){
-        console.log('scanOrderInfo:',err)
-      //  error({ statusCode: 500, code,message })
+      console.log('scanOrderInfo:',err)
+      error({ statusCode: 500, code:errl.code,message:err.message })
      }
   },
   data() {
@@ -79,6 +76,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
   mounted(){
       this.getOrderInfo()
       this.confirmPayment()
+      
   },
   methods:{
     async getOrderInfo(){
@@ -138,11 +136,16 @@ export default { // this.$toast.error('服务器开小差啦~~')
             onBridgeReady();
         }
    },
-   aliPay() {
-        if(this.isAutoRenew == '1'){
-            this.alipayRenewalPayment(this.aliPayUrl)
-        }
-       
+   aliPay() { 
+     if(this.isAutoRenew == '1'){ // 续费
+         this.alipayRenewalPayment(this.aliPayUrl)
+     }else{
+       const div = document.createElement('div')
+                 div.innerHTML = this.aliPayUrl;
+                 document.body.appendChild(div);
+                 document.forms [0].submit();
+     }
+      
     },
     alipayRenewalPayment(orderStr){
         console.log('ap:',ap)

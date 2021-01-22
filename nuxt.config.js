@@ -27,6 +27,11 @@ function getFilename(){
 }
 
 module.exports =  {
+  loading: {
+    color: '#f25125',
+    height: '1px'
+  },
+  telemetry: false,
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: '订单详情',
@@ -53,6 +58,7 @@ module.exports =  {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/vconsole.js', ssr: false }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -70,15 +76,33 @@ module.exports =  {
       filename: getFilename()
    }]
   ],
+  toast:{
+    position:'top-center',
+    register:[
+      {
+        options:{
+          type:'error'
+        }
+      }
+    ]
+  },
   axios:{
     retry: { retries: 3 }
   },
-
+  publicRuntimeConfig: {
+    axios: {
+     // browserBaseURL: process.env.NODE_ENV =='local'?'':process.env.API_URL
+    }
+  },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
      /*
     ** 您可以在这里扩展webpack配置
    */
   
+  },
+  server: {
+    port: 8089, // default: 3000
+    host: '0.0.0.0' // default: localhost
   }
 }

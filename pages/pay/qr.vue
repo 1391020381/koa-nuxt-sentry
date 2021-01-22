@@ -9,38 +9,177 @@
              <span class="item-desc goodsName">{{ goodsName}}</span>
             </li>
         </ul>
-       <div class="pay-confirm">继续支付</div>
-       
+       <div class="pay-confirm" @click="confirmPayment">继续支付</div>
+       <div v-html="aliPayUrl" v-if="isAutoRenew!='1'"></div>
   </div>
 </template>
 
 <script>
 import orderApi from "../../api/order" 
 export default { // this.$toast.error('服务器开小差啦~~')
- async asyncData({ params,query,$axios}){
-     
-      let code = query.code
-      let orderNo = query.orderNo
-      let platformCode = query.platformCode
-      let host = query.host
-       console.log('asyncData:',query.orderNo)
-      let result = await $axios.$post(orderApi.status,{
-         orderNo: orderNo
-      })
-      console.log('result:',JSON.stringify(result))
-      return {payPrice:result.data.payPrice,goodsName:result.data.goodsName}
+ async asyncData({req,params,query,$axios,error,redirect}){
+     try{
+         let source = req.headers['user-agent']
+        let isWeChat = source.indexOf("MicroMessenger") !== -1
+        console.log('scanOrderInfo-参数:',JSON.stringify({
+           orderNo: query.orderNo,
+           code: query.code,
+           payType: isWeChat == true ? 'wechat' : 'alipay',
+           host: req.origin // open域名
+         }))
+       // let isAliPay = source.indexOf("AlipayClient") !== -1
+         const { code,data,message } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
+           orderNo: query.orderNo,
+           code: query.code,
+           payType: isWeChat == true ? 'wechat' : 'alipay',
+           host: req.origin
+         })
+       //  console.log('scanOrderInfo:',code,data,message)
+         if(code == 0){
+            if(data.needRedirect){
+              console.log('重定向')
+              redirect(data.returnUrl)
+            }
+            return {
+              isWeChat:isWeChat,
+              appId:data.appId, 
+              timeStamp:data.timeStamp, 
+              nonceStr:data.nonceStr, 
+              prepayId:data.prepayId, 
+              paySign:data.paySign,
+              aliPayUrl:data.aliPayUrl
+            }
+         }else{ // 上报
+           
+         }
+     }catch(err){
+        console.log('scanOrderInfo:',err)
+     }
   },
   data() {
     return {
-      payPrice: 0.01,
-      goodsName: "合同",
+      payPrice: '',
+      goodsName: "",
+      aliPayUrl:''
     };
   },
   head() {
-    return {
-      title: "订单详情",
+    console.log('isWechat:',this.isWeChat)
+    if(!this.isWeChat){
+       return {
+          title: "订单详情",
+       }
+    }else{
+        return {
+         title: "订单详情",
+         script: [
+           {
+          src: '//gw.alipayobjects.com/as/g/h5-lib/alipayjsapi/3.1.1/alipayjsapi.inc.min.js'
+         }
+    ]
     };
+    }
   },
+  mounted(){
+      this.getOrderInfo()
+      this.confirmPayment()
+  },
+  methods:{
+    async getOrderInfo(){
+     console.log('getOrderInfo:',process.env.browserBaseURL)
+      try{
+           const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo})
+           if(code==0){
+             this.payPrice = data.payPrice/100
+             this.goodsName = data.goodsName
+           }else{
+             console.log(code,data,message)
+           }
+      }catch(err){  
+
+      }
+      
+    },
+    confirmPayment(){
+        console.log('confirmPayment',{appId:this.appId,timeStamp:this.timeStamp,nonceStr:this.nonceStr,prepayId:this.prepayId,paySign:this.paySign})
+        if(this.isWeChat){
+            this.wechatPay({appId:this.appId,timeStamp:this.timeStamp,nonceStr:this.nonceStr,prepayId:this.prepayId,paySign:this.paySign})
+        }else{
+          this.aliPay()
+        }
+    },
+   wechatPay({appId, timeStamp, nonceStr, prepayId, paySign}){
+     console.log('wechatPay:', appId, timeStamp, nonceStr, prepayId, paySign)
+       function onBridgeReady() {
+            WeixinJSBridge.invoke(
+                'getBrandWCPayRequest', {
+                "appId": appId,     //公众号名称，由商户传入     
+                "timeStamp": timeStamp,         //时间戳，自1970年以来的秒数     
+                "nonceStr": nonceStr, //随机串     
+                "package": "prepay_id=" + prepayId,
+                "signType": "MD5",         //微信签名方式：     
+                "paySign": paySign //微信签名 
+            },
+                function (res) {
+                    console.log('wechatPay:', res)
+                    if (res.err_msg == "get_brand_wcpay_request:ok") { // 支付成功
+                      //  getOrderStatus(orderNo)
+                    } else if (res.err_msg == "get_brand_wcpay_request:fail") { // 支付失败
+                        console.log('wechatPay支付失败:', res)
+                        // $.toast({
+                        //     text: "支付失败",
+                        //     delay: 3000,
+                        // })
+                        // getOrderStatus(orderNo)
+                    }
+                });
+        }
+        if (typeof WeixinJSBridge == "undefined") {
+            if (document.addEventListener) {
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+            } else if (document.attachEvent) {
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+            }
+        } else {
+            onBridgeReady();
+        }
+   },
+   aliPay() {
+        if(this.isAutoRenew == '1'){
+            this.alipayRenewalPayment(this.aliPayUrl)
+        }
+       
+    },
+    alipayRenewalPayment(orderStr){
+        console.log('ap:',ap)
+        ap.tradePay({
+            orderStr: orderStr
+          }, function(res){
+            console.log(res)
+            // ap.alert(res.resultCode);
+            if(res.resultCode == '9000'){
+              //  getOrderStatus(orderNo)
+            }else{
+
+            }
+          })
+    }
+  },
+  computed:{
+    orderNo:function(){
+      return this.$route.query.orderNo
+    },
+    platformCode:function(){
+      return this.$route.query.platformCode
+    },
+     host:function(){
+      return this.$route.query.host
+    },
+    isAutoRenew:function(){
+      return this.$route.query.isAutoRenew
+    }
+  }
 };
 </script>
 

@@ -27,6 +27,7 @@ function getFilename(){
 }
 
 module.exports =  {
+  dev: process.env.NODE_ENV == 'local',
   loading: {
     color: '#f25125',
     height: '1px'

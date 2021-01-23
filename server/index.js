@@ -5,14 +5,14 @@ async function start () {
   
   // Import and Set Nuxt.js options
   const config = require('../nuxt.config.js')
-  config.dev = !(app.env === 'production')
+ 
 
 const host = config.server.host || '127.0.0.1'
   const port = config.server.port || 3000
   console.log("config:",config.server.host,config.server.port)
   // Instantiate nuxt.js
   const nuxt = new Nuxt(config)
-
+  console.log('config.dev:',config.dev)
   // Build in development
   if (config.dev) {
     const builder = new Builder(nuxt)

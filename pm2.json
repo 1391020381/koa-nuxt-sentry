@@ -1,7 +1,7 @@
 {
     "apps":[
       {
-        "name":"ishare_pc",
+        "name":"ishare-payment-system",
         "script":"./server/index.js",
         "cwd": "./",
         "watch": true,

@@ -64,7 +64,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
     console.log('isWechat:',this.isWeChat)
     if(this.isWeChat){
        return {
-          title: "订单详情",
+          title: "订单详情"
        }
     }else{
         return {
@@ -80,6 +80,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
   mounted(){
       this.getOrderInfo()
       this.confirmPayment()
+      this.handle('17cdd3f409f282dc0eeb3785fcf78a66')
       
   },
   methods:{
@@ -109,7 +110,8 @@ export default { // this.$toast.error('服务器开小差啦~~')
    wechatPay({appId, timeStamp, nonceStr, prepayId, paySign}){
      console.log('wechatPay:', appId, timeStamp, nonceStr, prepayId, paySign)
        function onBridgeReady() {
-            WeixinJSBridge.invoke(
+           try{
+              WeixinJSBridge.invoke(
                 'getBrandWCPayRequest', {
                 "appId": appId,     //公众号名称，由商户传入     
                 "timeStamp": timeStamp,         //时间戳，自1970年以来的秒数     
@@ -128,6 +130,9 @@ export default { // this.$toast.error('服务器开小差啦~~')
                         this.getOrderStatus(this.orderNo)
                     }
                 });
+           }catch(err){
+              this.$sentry.captureException(err)
+           }
         }
         if (typeof WeixinJSBridge == "undefined") {
             if (document.addEventListener) {
@@ -176,6 +181,21 @@ export default { // this.$toast.error('服务器开小差啦~~')
             this.$router.replace({ path:'/pay/paymentresult',query:{orderNo}})
         }
 
+    },
+    handle(id) {
+      var _hmt = _hmt || [];//此变量百度统计需要  需全局变量
+        if (id){
+            try {
+                (function () {
+                    var hm = document.createElement("script");
+                    hm.src = "https://hm.baidu.com/hm.js?" + id;
+                    var s = document.getElementsByTagName("script")[0];
+                    s.parentNode.insertBefore(hm, s);
+                })();
+            } catch (e) {
+                console.error(id,e);
+            }
+        }
     }
   },
   computed:{

@@ -59,7 +59,43 @@ export default {
             orderTime:'',
             payNo:'',
             goodsName:''
-        }
+        },
+    eventNameList :{
+      payFileResult:{
+        loginstatus:0,
+        userid:'',
+        pageid:'PC-M-FD',
+        pagename:'',
+        payresult:'',
+        orderid:'',
+        orderpaytype:'',
+        orderpayprice:'',
+        fileid:'',
+        filename:'',
+        fileprice:'',
+        filecategoryname:'',
+        fileformat:'',
+        filecootype:'',
+        fileuploaderid:''
+    },
+    payVipResult:{
+        loginstatus:0,
+        userid:'',
+        pageid:'PC-M-FD',
+        pagename:'',
+        payresult:'',
+        orderid:'',
+        orderpaytype:'',
+        orderpayprice:'',
+        fileid:'',
+        filename:'',
+        fileprice:'',
+        filecategoryname:'',
+        fileformat:'',
+        filecootype:'',
+        fileuploaderid:''
+    }
+  }
     };
   },
   head() {
@@ -85,6 +121,12 @@ export default {
                   payNo:data.payNo,
                   goodsName:data.goodsName
               })
+               if (data.goodsType == 1) {
+                        this.handleBaiduStatisticsPush('payFileResult', { payresult: 1, orderid: this.orderNo, orderpaytype: data.payType })
+                    }
+                    if (data.goodsType == 2) {
+                        this.handleBaiduStatisticsPush('payVipResult', { payresult: 1, orderid: this.orderNo, orderpaytype: data.payType })
+                    }
            }else{
              console.log(code,data,message)
             this.$toast.error(message)
@@ -107,7 +149,26 @@ export default {
         myweekday = "0" + myweekday;
     }
     return (myyear + "-" + mymonth + "-" + myweekday);//想要什么格式都可以随便自己拼
-}
+  },
+  handleBaiduStatisticsPush(eventName,params){  // 需要添加 全局百度统计
+    var temp = this.eventNameList[eventName]
+    if(eventName == 'fileDetailPageView'){
+        params = temp
+    }
+    if(eventName == 'payFileResult'){
+        params = Object.assign(temp, {payresult:params.payresult,orderid:params.orderNo,orderpaytype:params.orderpaytype});
+    }
+
+    if(eventName == 'payVipResult'){
+        params =  Object.assign(temp, {payresult:params.payresult,orderid:params.orderNo,orderpaytype:params.orderpaytype});
+    }
+    if(eventName == 'loginResult'){
+        params =  Object.assign(temp,{loginType:params.loginType,userid:params.userid,loginResult:params.loginResult})
+    }
+    
+    _hmt.push(['_trackCustomEvent',eventName,params]);
+    console.log('百度统计:',eventName,params)
+  }
   },
   computed:{
     orderNo:function(){

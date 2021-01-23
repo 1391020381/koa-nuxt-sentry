@@ -71,12 +71,19 @@ module.exports =  {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxtjs/sentry',
     '@nuxtjs/axios',
     '@nuxtjs/toast',
     ['@nuxtjs/dotenv', {
       filename: getFilename()
    }]
   ],
+  sentry: {
+    dsn: process.env.NODE_ENV !='prod' &&process.env.NODE_ENV !='pre'? "http://ed6367bedee1470da3e967bf1ba58710@192.168.1.199:9000/5":"", // Enter your project's DSN here
+    config: {
+      publishRelease:true
+    }, // Additional config
+  },
   toast:{
     position:'top-center',
     register:[
@@ -101,7 +108,22 @@ module.exports =  {
      /*
     ** 您可以在这里扩展webpack配置
    */
-  
+    extend(config,{isDev,isClient}){
+      console.log('isDev:',isDev,isClient)
+      if (!isDev) {
+          const pkg = require('./package.json')
+           config.devtool = 'source-map'  
+           const release = pkg.name + '-' + pkg.version
+           console.log('release',release)
+           const SentryPlugin = require('@sentry/webpack-plugin')
+           config.plugins.push(new SentryPlugin({
+            include: '.nuxt/dist/', // 要上传的文件夹
+            release,
+            configFile: '.sentryclirc',
+            urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
+           }))
+    }
+    }
   },
   server: {
     port: 8089, // default: 3000

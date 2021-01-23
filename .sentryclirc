@@ -1,0 +1,11 @@
+
+
+[defaults]
+url = http://192.168.1.199:9000/
+org = sentry
+project = ishare-payment-system
+[auth]
+# 身份令牌 在sentry服务端 setting-》accout->api->auth Tokens 创建一个新的就好
+# 注意这里要有project:write 权限 下面我会给出具体页面，看着上面路径进去就好。
+# 开发 测试 环境
+token = bc7a9ae281c545c9b569d8c5b9e6206e51c9248cecc4443c850c899bae0da55f

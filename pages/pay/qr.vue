@@ -16,7 +16,7 @@
 <script>
 import orderApi from "../../api/order" 
 export default { // this.$toast.error('服务器开小差啦~~')
- async asyncData({req,params,query,$axios,error,redirect}){
+ async asyncData({req,params,query,$axios,$sentry,error,redirect}){
      try{
          let source = req.headers['user-agent']
         let isWeChat = source.indexOf("MicroMessenger") != -1
@@ -26,6 +26,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
            payType: isWeChat == true ? 'wechat' : 'alipay',
            host: req.origin
          })
+     
       console.log('scanOrderInfo:',code,data,message)
          if(code == 0){
             if(data.needRedirect){
@@ -42,11 +43,14 @@ export default { // this.$toast.error('服务器开小差啦~~')
               aliPayUrl:data.aliPayUrl
             }
          }else{ // 上报
+           $sentry.captureException(new Error({code,message}))
            error({ statusCode: 500, code,message })
          }
      }catch(err){
       console.log('scanOrderInfo:',err)
-      error({ statusCode: 500, code:errl.code,message:err.message })
+      $sentry.captureException(error)
+      $sentry.captureException(new Error(JSON.stringify({code:'0',message:err.message})))
+      error({ statusCode: 500, code:err.code,message:err.message })
      }
   },
   data() {

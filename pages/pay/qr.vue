@@ -192,7 +192,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
            window.location.replace(redirectUrl)
         } else { //直接跳结果 urlConfig
            // location.href = '/pay/paymentresult?orderNo=' + orderNo
-           let url = '/pay/paymentresult?orderNo=' + orderNo
+           let url = '/pay/paymentresult?orderNo=' + this.orderNo
             window.location.replace(url)
           //  this.$router.replace({ path:'/pay/paymentresult',query:{orderNo:this.orderNo}})
         }

@@ -5,7 +5,7 @@ const staticUrlList = {
   'pre':"//pre-static3.iask.cn",
   'prod':"//static3.iask.cn"
 }
-
+const pkg = require('./package.json') 
 function getFilename(){
   let filename = ''
   let NODE_ENV =  process.env.NODE_ENV
@@ -88,7 +88,10 @@ module.exports =  {
   sentry: {
     dsn: process.env.NODE_ENV !='prod' &&process.env.NODE_ENV !='pre'? "http://ed6367bedee1470da3e967bf1ba58710@192.168.1.199:9000/5":"", // Enter your project's DSN here
     config: {
-      publishRelease:true
+      release:pkg.name + '-' + pkg.version,
+      publishRelease:true,
+      clientIntegrations:{ RewriteFrames: {},},
+      serverIntegrations:{ RewriteFrames: {},}
     }, // Additional config
   },
   toast:{
@@ -118,7 +121,7 @@ module.exports =  {
     extend(config,{isDev,isClient}){
       console.log('isDev:',isDev,isClient)
       if (isClient&&!isDev) {
-          const pkg = require('./package.json')
+        
            config.devtool = 'source-map'  
            config.output.publicPath = staticUrlList[process.env.NODE_ENV]  + '/ishare-payment'
            const release = pkg.name + '-' + pkg.version

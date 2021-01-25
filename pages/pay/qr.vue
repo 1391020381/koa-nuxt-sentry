@@ -119,6 +119,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
     },
    wechatPay({appId, timeStamp, nonceStr, prepayId, paySign}){
      console.log('wechatPay:', appId, timeStamp, nonceStr, prepayId, paySign)
+     let that = this
        function onBridgeReady() {
            try{
               WeixinJSBridge.invoke(
@@ -134,15 +135,16 @@ export default { // this.$toast.error('服务器开小差啦~~')
                     console.log('wechatPay:', res)
                     if (res.err_msg == "get_brand_wcpay_request:ok") { // 支付成功
                      console.log('get_brand_wcpay_request:ok')
-                      this.getOrderStatus()
+                      that.getOrderStatus()
                     } else if (res.err_msg == "get_brand_wcpay_request:fail") { // 支付失败
                         console.log('get_brand_wcpay_request:fail', res)
                       //  this.$toast.error('支付失败')
-                      this.getOrderStatus()
+                      that.getOrderStatus()
                     }
                 });
            }catch(err){
-              this.$sentry.captureException(JSON.stringify({tag:'onBridgeReady',err}))
+              console.log('onBridgeReady',JSON.stringify(err))
+              that.$sentry.captureException(JSON.stringify({tag:'onBridgeReady',err}))
            }
         }
         if (typeof WeixinJSBridge == "undefined") {
@@ -169,13 +171,14 @@ export default { // this.$toast.error('服务器开小差啦~~')
     },
     alipayRenewalPayment(orderStr){
         console.log('ap:',ap)
+        let that = this
         ap.tradePay({
             orderStr: orderStr
           }, function(res){
             console.log('alipay:',res)
            // ap.alert(res.resultCode);
             if(res.resultCode == '9000'){
-              this.getOrderStatus()
+              that.getOrderStatus()
             }else{
 
             }

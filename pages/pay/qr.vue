@@ -64,7 +64,12 @@ export default { // this.$toast.error('服务器开小差啦~~')
     console.log('isWechat:',this.isWeChat)
     if(this.isWeChat){
        return {
-          title: "订单详情"
+          title: "订单详情",
+          script: [
+           {
+          src: '/ishare-payment/baidu-statistics/index.js'
+         }
+    ]
        }
     }else{
         return {
@@ -72,6 +77,9 @@ export default { // this.$toast.error('服务器开小差啦~~')
          script: [
            {
           src: '//gw.alipayobjects.com/as/g/h5-lib/alipayjsapi/3.1.1/alipayjsapi.inc.min.js'
+         },
+          {
+          src: '/ishare-payment/baidu-statistics/index.js'
          }
     ]
     };
@@ -80,7 +88,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
   mounted(){
       this.confirmPayment()
       this.getOrderInfo()
-      this.handle('17cdd3f409f282dc0eeb3785fcf78a66')
+    
       
   },
   methods:{
@@ -181,21 +189,6 @@ export default { // this.$toast.error('服务器开小差啦~~')
             this.$router.replace({ path:'/pay/paymentresult',query:{orderNo}})
         }
 
-    },
-    handle(id) {
-      var _hmt = _hmt || [];//此变量百度统计需要  需全局变量
-        if (id){
-            try {
-                (function () {
-                    var hm = document.createElement("script");
-                    hm.src = "https://hm.baidu.com/hm.js?" + id;
-                    var s = document.getElementsByTagName("script")[0];
-                    s.parentNode.insertBefore(hm, s);
-                })();
-            } catch (e) {
-                console.error(id,e);
-            }
-        }
     }
   },
   computed:{

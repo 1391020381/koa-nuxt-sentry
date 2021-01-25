@@ -14,6 +14,14 @@ function handle(id) {
         }
     }
 }
+// 支付中间页
+if(location.pathname == "/pay/qr"){
+    handle('17cdd3f409f282dc0eeb3785fcf78a66');
+}
+
 // 支付结果页
-handle('17cdd3f409f282dc0eeb3785fcf78a66');
+if(location.pathname == "/pay/paymentresult"){
+    handle('17cdd3f409f282dc0eeb3785fcf78a66');
+}
+
 

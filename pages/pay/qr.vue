@@ -16,15 +16,19 @@
 <script>
 import orderApi from "../../api/order" 
 export default { // this.$toast.error('服务器开小差啦~~')
- async asyncData({req,params,query,$axios,$sentry,error,redirect}){
+ async asyncData({req,query,$axios,$sentry,error,redirect}){
      try{
-         let source = req.headers['user-agent']
+         let source = req&&req.headers['user-agent']
         let isWeChat = source.indexOf("MicroMessenger") != -1
+        var isAliPay = source.indexOf("AlipayClient") !== -1
+        if(!isWeChat&&!isAliPay){
+          error({ statusCode: 500,message:"请使用微信或支付宝支付" })
+        }
          const { code,data,message } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
            orderNo: query.orderNo,
            code: query.code,
            payType: isWeChat == true ? 'wechat' : 'alipay',
-           host: req.origin
+           host: process.env.host
          })
      
       console.log('scanOrderInfo:',code,data,message)
@@ -67,7 +71,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
           title: "订单详情",
           script: [
            {
-          src: '/ishare-payment/baidu-statistics/index.js'
+          src: process.env.static_url + '/ishare-payment/baidu-statistics/index.js'
          }
     ]
        }
@@ -131,15 +135,16 @@ export default { // this.$toast.error('服务器开小差啦~~')
                 function (res) {
                     console.log('wechatPay:', res)
                     if (res.err_msg == "get_brand_wcpay_request:ok") { // 支付成功
-                      this.getOrderStatus(this.orderNo)
+                     console.log('get_brand_wcpay_request:ok')
+                      this.getOrderStatus()
                     } else if (res.err_msg == "get_brand_wcpay_request:fail") { // 支付失败
-                        console.log('wechatPay支付失败:', res)
-                       this.$toast.error('支付失败')
-                        this.getOrderStatus(this.orderNo)
+                        console.log('get_brand_wcpay_request:fail', res)
+                      //  this.$toast.error('支付失败')
+                      this.getOrderStatus()
                     }
                 });
            }catch(err){
-              this.$sentry.captureException(err)
+              this.$sentry.captureException(JSON.stringify({tag:'onBridgeReady',err}))
            }
         }
         if (typeof WeixinJSBridge == "undefined") {
@@ -169,24 +174,25 @@ export default { // this.$toast.error('服务器开小差啦~~')
         ap.tradePay({
             orderStr: orderStr
           }, function(res){
-            console.log(res)
+            console.log('alipay:',res)
            // ap.alert(res.resultCode);
             if(res.resultCode == '9000'){
-              this.getOrderStatus(this.orderNo)
+              this.getOrderStatus()
             }else{
 
             }
           })
     },
-    getOrderStatus(orderNo) {
+    getOrderStatus() {
+      console.log('getOrderStatus:',window.history,this.$router)
         if (this.platformCode == 'm') { //m端跳转公共的支付空白页 然后跳相关的页面(m端付费文档微信浏览器)
-            let redirectUrl = this.host + "/node/payInfo?orderNo=" + orderNo + "&mark=wx";
+            let redirectUrl = this.host + "/node/payInfo?orderNo=" + this.orderNo + "&mark=wx";
            // location.href = '/pay/payRedirect?redirectUrl=' + encodeURIComponent(redirectUrl);
           //  语法:window.history.pushState(state, title, url);
           window.history.pushState('m', '订单详情', redirectUrl)
         } else { //直接跳结果 urlConfig
            // location.href = '/pay/paymentresult?orderNo=' + orderNo
-            this.$router.replace({ path:'/pay/paymentresult',query:{orderNo}})
+            this.$router.replace({ path:'/pay/paymentresult',query:{orderNo:this.orderNo}})
         }
 
     }

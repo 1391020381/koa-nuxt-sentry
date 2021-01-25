@@ -103,7 +103,7 @@ export default {
       title: "订单结果页",
           script: [
            {
-          src: '/ishare-payment/baidu-statistics/index.js'
+          src:  process.env.static_url + '/ishare-payment/baidu-statistics/index.js'
          }
     ]
     };

@@ -158,11 +158,9 @@ export default {
   handleBaiduStatisticsPush(eventName,params){  // 需要添加 全局百度统计
    console.log(eventName,params)
     var temp = this.eventNameList[eventName]
-  
     if(eventName == 'payFileResult'){
         params = Object.assign(temp, {payresult:params.payresult,orderid:params.orderNo,orderpaytype:params.orderpaytype});
     }
-
     if(eventName == 'payVipResult'){
         params =  Object.assign(temp, {payresult:params.payresult,orderid:params.orderNo,orderpaytype:params.orderpaytype});
     }

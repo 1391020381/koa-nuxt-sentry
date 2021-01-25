@@ -15,7 +15,7 @@
 
 <script>
 import orderApi from "../../api/order" 
-export default { // this.$toast.error('服务器开小差啦~~')
+export default {
  async asyncData({req,query,$axios,$sentry,error,redirect}){
      try{
          let source = req&&req.headers['user-agent']
@@ -176,7 +176,6 @@ export default { // this.$toast.error('服务器开小差啦~~')
             orderStr: orderStr
           }, function(res){
             console.log('alipay:',res)
-           // ap.alert(res.resultCode);
             if(res.resultCode == '9000'){
               that.getOrderStatus()
             }else{
@@ -188,13 +187,10 @@ export default { // this.$toast.error('服务器开小差啦~~')
       console.log('getOrderStatus:',window.history,this.$router)
         if (this.platformCode == 'm') { //m端跳转公共的支付空白页 然后跳相关的页面(m端付费文档微信浏览器)
             let redirectUrl = this.host + "/node/payInfo?orderNo=" + this.orderNo + "&mark=wx";
-           // location.href = '/pay/payRedirect?redirectUrl=' + encodeURIComponent(redirectUrl);
-           window.location.replace(redirectUrl)
+            window.location.replace(redirectUrl)
         } else { //直接跳结果 urlConfig
-           // location.href = '/pay/paymentresult?orderNo=' + orderNo
            let url = '/pay/paymentresult?orderNo=' + this.orderNo
             window.location.replace(url)
-          //  this.$router.replace({ path:'/pay/paymentresult',query:{orderNo:this.orderNo}})
         }
 
     }

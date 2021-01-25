@@ -189,9 +189,11 @@ export default { // this.$toast.error('服务器开小差啦~~')
         if (this.platformCode == 'm') { //m端跳转公共的支付空白页 然后跳相关的页面(m端付费文档微信浏览器)
             let redirectUrl = this.host + "/node/payInfo?orderNo=" + this.orderNo + "&mark=wx";
            // location.href = '/pay/payRedirect?redirectUrl=' + encodeURIComponent(redirectUrl);
-           location.href = redirectUrl
+           window.location.replace(redirectUrl)
         } else { //直接跳结果 urlConfig
-            location.href = '/pay/paymentresult?orderNo=' + orderNo
+           // location.href = '/pay/paymentresult?orderNo=' + orderNo
+           let url = '/pay/paymentresult?orderNo=' + orderNo
+            window.location.replace(url)
           //  this.$router.replace({ path:'/pay/paymentresult',query:{orderNo:this.orderNo}})
         }
 

@@ -1,4 +1,10 @@
-
+const staticUrlList = {
+  'local':'',
+  'dev':"//dev-static3.iask.cn",
+  'test':"//test-static3.iask.cn",
+  'pre':"//pre-static3.iask.cn",
+  'prod':"//static3.iask.cn"
+}
 
 function getFilename(){
   let filename = ''
@@ -27,6 +33,7 @@ function getFilename(){
 }
 
 module.exports =  {
+  // buildDir: 'isharePayment',
   dev: process.env.NODE_ENV == 'local',
   loading: {
     color: '#f25125',
@@ -48,7 +55,7 @@ module.exports =  {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ],
     script:[
-      { src: '/rem/index.js', type: 'text/javascript', charset: 'utf-8' }
+      { src: staticUrlList[process.env.NODE_ENV] + '/ishare-payment/rem/index.js', type: 'text/javascript', charset: 'utf-8' }
     ]
   },
 
@@ -100,7 +107,7 @@ module.exports =  {
   },
   publicRuntimeConfig: {
     axios: {
-     // browserBaseURL: process.env.NODE_ENV =='local'?'':process.env.API_URL
+     
     }
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -110,9 +117,10 @@ module.exports =  {
    */
     extend(config,{isDev,isClient}){
       console.log('isDev:',isDev,isClient)
-      if (!isDev) {
+      if (isClient&&!isDev) {
           const pkg = require('./package.json')
            config.devtool = 'source-map'  
+           config.output.publicPath = staticUrlList[process.env.NODE_ENV]  + '/ishare-payment'
            const release = pkg.name + '-' + pkg.version
            console.log('release',release)
            const SentryPlugin = require('@sentry/webpack-plugin')

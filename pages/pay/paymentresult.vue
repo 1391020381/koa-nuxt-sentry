@@ -101,6 +101,11 @@ export default {
   head() {
     return {
       title: "订单结果页",
+          script: [
+           {
+          src: '/ishare-payment/baidu-statistics/index.js'
+         }
+    ]
     };
   },
   mounted(){
@@ -151,10 +156,9 @@ export default {
     return (myyear + "-" + mymonth + "-" + myweekday);//想要什么格式都可以随便自己拼
   },
   handleBaiduStatisticsPush(eventName,params){  // 需要添加 全局百度统计
+   console.log(eventName,params)
     var temp = this.eventNameList[eventName]
-    if(eventName == 'fileDetailPageView'){
-        params = temp
-    }
+  
     if(eventName == 'payFileResult'){
         params = Object.assign(temp, {payresult:params.payresult,orderid:params.orderNo,orderpaytype:params.orderpaytype});
     }
@@ -162,10 +166,6 @@ export default {
     if(eventName == 'payVipResult'){
         params =  Object.assign(temp, {payresult:params.payresult,orderid:params.orderNo,orderpaytype:params.orderpaytype});
     }
-    if(eventName == 'loginResult'){
-        params =  Object.assign(temp,{loginType:params.loginType,userid:params.userid,loginResult:params.loginResult})
-    }
-    
     _hmt.push(['_trackCustomEvent',eventName,params]);
     console.log('百度统计:',eventName,params)
   }

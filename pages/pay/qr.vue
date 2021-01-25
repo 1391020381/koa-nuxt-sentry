@@ -78,8 +78,8 @@ export default { // this.$toast.error('服务器开小差啦~~')
     }
   },
   mounted(){
-      this.getOrderInfo()
       this.confirmPayment()
+      this.getOrderInfo()
       this.handle('17cdd3f409f282dc0eeb3785fcf78a66')
       
   },

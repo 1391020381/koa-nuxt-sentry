@@ -51,9 +51,7 @@ export default { // this.$toast.error('服务器开小差啦~~')
            error({ statusCode: 500, code,message })
          }
      }catch(err){
-      console.log('scanOrderInfo:',err)
       $sentry.captureException(error)
-      $sentry.captureException(new Error(JSON.stringify({code:'0',message:err.message})))
       error({ statusCode: 500, code:err.code,message:err.message })
      }
   },
@@ -188,11 +186,10 @@ export default { // this.$toast.error('服务器开小差啦~~')
         if (this.platformCode == 'm') { //m端跳转公共的支付空白页 然后跳相关的页面(m端付费文档微信浏览器)
             let redirectUrl = this.host + "/node/payInfo?orderNo=" + this.orderNo + "&mark=wx";
            // location.href = '/pay/payRedirect?redirectUrl=' + encodeURIComponent(redirectUrl);
-          //  语法:window.history.pushState(state, title, url);
-          window.history.pushState('m', '订单详情', redirectUrl)
+           location.href = redirectUrl
         } else { //直接跳结果 urlConfig
-           // location.href = '/pay/paymentresult?orderNo=' + orderNo
-            this.$router.replace({ path:'/pay/paymentresult',query:{orderNo:this.orderNo}})
+            location.href = '/pay/paymentresult?orderNo=' + orderNo
+          //  this.$router.replace({ path:'/pay/paymentresult',query:{orderNo:this.orderNo}})
         }
 
     }

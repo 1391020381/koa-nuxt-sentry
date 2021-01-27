@@ -107,9 +107,9 @@ export default {
   },
   mounted(){
      this.getOrderInfo();    
-     this.$nextTick(()=>{  
-       this.confirmPayment();
-     });
+    //  this.$nextTick(()=>{  
+    //    this.confirmPayment();
+    //  });
   },
   methods:{
     async getOrderInfo(){

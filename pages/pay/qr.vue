@@ -51,7 +51,7 @@ export default {
               aliPayUrl:data.aliPayUrl
             };
          }else{ // 上报
-           $sentry.captureException(new Error({code,message}));
+           $sentry.captureException(JSON.stringify({code,message}));
            error({ statusCode: 500, code,message });
          }
      }catch(err){
@@ -126,6 +126,7 @@ export default {
            }
       }catch(err){  
          this.$toast.error(err.message);
+          this.$sentry.captureException(JSON.stringify(err));
       }
       
     },

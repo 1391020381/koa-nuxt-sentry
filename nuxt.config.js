@@ -86,7 +86,7 @@ module.exports = {
     }]
   ],
   sentry: {
-    dsn: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre' ? "http://ed6367bedee1470da3e967bf1ba58710@192.168.1.199:9000/5" : "", // Enter your project's DSN here
+    dsn: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre' ? "http://ed6367bedee1470da3e967bf1ba58710@192.168.1.199:9000/5" : "http://9cb51b12168c4e3dacc86d62a9f4aa58@sentry-ishare.iask.com.cn/3", // Enter your project's DSN here
     config: {
       release: pkg.name + '-' + pkg.version,
       publishRelease: true,
@@ -129,7 +129,7 @@ module.exports = {
         config.plugins.push(new SentryPlugin({
           include: '.nuxt/dist/', // 要上传的文件夹
           release,
-          configFile: '.sentryclirc',
+          configFile: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre'?'.dev-sentryclirc':'.sentryclirc',
           urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
         }));
       }

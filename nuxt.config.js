@@ -4,11 +4,11 @@ const staticUrlList = {
   'test': "//test-static3.iask.cn",
   'pre': "//pre-static3.iask.cn",
   'prod': "//static3.iask.cn"
-}
-const pkg = require('./package.json')
+};
+const pkg = require('./package.json');
 function getFilename() {
-  let filename = ''
-  let NODE_ENV = process.env.NODE_ENV
+  let filename = '';
+  let NODE_ENV = process.env.NODE_ENV;
   switch (NODE_ENV) {
     case 'prod':
       filename = '.env.prod';
@@ -26,10 +26,10 @@ function getFilename() {
       filename = ".env.local";
       break;
     default:
-      filename = ".env.prod"
+      filename = ".env.prod";
   }
-  console.log('filename:', filename)
-  return filename
+  console.log('filename:', filename);
+  return filename;
 }
 
 module.exports = {
@@ -119,27 +119,27 @@ module.exports = {
    ** 您可以在这里扩展webpack配置
   */
     extend(config, { isDev, isClient }) {
-      console.log('isDev:', isDev, isClient)
+      console.log('isDev:', isDev, isClient);
       if (isClient && !isDev) {
-
-        config.devtool = 'source-map'
-        config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment'
-        const release = pkg.name + '-' + pkg.version
-        console.log('release', release)
-        const SentryPlugin = require('@sentry/webpack-plugin')
+        config.devtool = 'source-map';
+        config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment';
+        const release = pkg.name + '-' + pkg.version;
+        console.log('release', release);
+        const SentryPlugin = require('@sentry/webpack-plugin');
         config.plugins.push(new SentryPlugin({
           include: '.nuxt/dist/', // 要上传的文件夹
           release,
           configFile: '.sentryclirc',
           urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
-        }))
-
+        }));
+      }
+      if (isDev) {
         config.module.rules.push({
           enforce: "pre",
           test: /\.(js|vue)$/,
           loader: "eslint-loader",
           exclude: /(node_modules)/
-        })
+        });
       }
     }
   },
@@ -147,4 +147,4 @@ module.exports = {
     port: 8089, // default: 3000
     host: '0.0.0.0' // default: localhost
   }
-}
+};

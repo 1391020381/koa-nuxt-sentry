@@ -1,38 +1,38 @@
 const staticUrlList = {
-  'local':'',
-  'dev':"//dev-static3.iask.cn",
-  'test':"//test-static3.iask.cn",
-  'pre':"//pre-static3.iask.cn",
-  'prod':"//static3.iask.cn"
+  'local': '',
+  'dev': "//dev-static3.iask.cn",
+  'test': "//test-static3.iask.cn",
+  'pre': "//pre-static3.iask.cn",
+  'prod': "//static3.iask.cn"
 }
-const pkg = require('./package.json') 
-function getFilename(){
+const pkg = require('./package.json')
+function getFilename() {
   let filename = ''
-  let NODE_ENV =  process.env.NODE_ENV
-  switch(NODE_ENV){
-        case 'prod':
-          filename = '.env.prod';
-        break;
-        case 'pre':
-          filename = ".env.pre" ;
-          break;
-        case "test":
-          filename = ".env.test";
-          break;  
-        case "dev":
-          filename = ".env.dev";
-          break;
-        case "local":
-          filename = ".env.local";
-          break;
-         default:
-           filename = ".env.prod"        
+  let NODE_ENV = process.env.NODE_ENV
+  switch (NODE_ENV) {
+    case 'prod':
+      filename = '.env.prod';
+      break;
+    case 'pre':
+      filename = ".env.pre";
+      break;
+    case "test":
+      filename = ".env.test";
+      break;
+    case "dev":
+      filename = ".env.dev";
+      break;
+    case "local":
+      filename = ".env.local";
+      break;
+    default:
+      filename = ".env.prod"
   }
-  console.log('filename:',filename)
+  console.log('filename:', filename)
   return filename
 }
 
-module.exports =  {
+module.exports = {
   // buildDir: 'isharePayment',
   dev: process.env.NODE_ENV == 'local',
   loading: {
@@ -54,14 +54,14 @@ module.exports =  {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ],
-    script:[
+    script: [
       { src: staticUrlList[process.env.NODE_ENV] + '/ishare-payment/rem/index.js', type: 'text/javascript', charset: 'utf-8' }
     ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    {src:'~assets/css/public.less',lang:'less'}
+    { src: '~assets/css/public.less', lang: 'less' }
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -83,57 +83,64 @@ module.exports =  {
     '@nuxtjs/toast',
     ['@nuxtjs/dotenv', {
       filename: getFilename()
-   }]
+    }]
   ],
   sentry: {
-    dsn: process.env.NODE_ENV !='prod' &&process.env.NODE_ENV !='pre'? "http://ed6367bedee1470da3e967bf1ba58710@192.168.1.199:9000/5":"", // Enter your project's DSN here
+    dsn: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre' ? "http://ed6367bedee1470da3e967bf1ba58710@192.168.1.199:9000/5" : "", // Enter your project's DSN here
     config: {
-      release:pkg.name + '-' + pkg.version,
-      publishRelease:true,
-      clientIntegrations:{ RewriteFrames: {},},
-      serverIntegrations:{ RewriteFrames: {},}
+      release: pkg.name + '-' + pkg.version,
+      publishRelease: true,
+      clientIntegrations: { RewriteFrames: {}, },
+      serverIntegrations: { RewriteFrames: {}, }
     }, // Additional config
   },
-  toast:{
-    position:'top-center',
-    register:[
+  toast: {
+    position: 'top-center',
+    register: [
       {
-        options:{
-          type:'error',
+        options: {
+          type: 'error',
           duration: 2000
         }
       }
     ]
   },
-  axios:{
+  axios: {
     retry: { retries: 3 }
   },
   publicRuntimeConfig: {
     axios: {
-     
+
     }
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-     /*
-    ** 您可以在这里扩展webpack配置
-   */
-    extend(config,{isDev,isClient}){
-      console.log('isDev:',isDev,isClient)
-      if (isClient&&!isDev) {
-        
-           config.devtool = 'source-map'  
-           config.output.publicPath = staticUrlList[process.env.NODE_ENV]  + '/ishare-payment'
-           const release = pkg.name + '-' + pkg.version
-           console.log('release',release)
-           const SentryPlugin = require('@sentry/webpack-plugin')
-           config.plugins.push(new SentryPlugin({
-            include: '.nuxt/dist/', // 要上传的文件夹
-            release,
-            configFile: '.sentryclirc',
-            urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
-           }))
-    }
+    /*
+   ** 您可以在这里扩展webpack配置
+  */
+    extend(config, { isDev, isClient }) {
+      console.log('isDev:', isDev, isClient)
+      if (isClient && !isDev) {
+
+        config.devtool = 'source-map'
+        config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment'
+        const release = pkg.name + '-' + pkg.version
+        console.log('release', release)
+        const SentryPlugin = require('@sentry/webpack-plugin')
+        config.plugins.push(new SentryPlugin({
+          include: '.nuxt/dist/', // 要上传的文件夹
+          release,
+          configFile: '.sentryclirc',
+          urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
+        }))
+
+        config.module.rules.push({
+          enforce: "pre",
+          test: /\.(js|vue)$/,
+          loader: "eslint-loader",
+          exclude: /(node_modules)/
+        })
+      }
     }
   },
   server: {

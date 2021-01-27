@@ -61,6 +61,8 @@ export default {
   },
   data() {
     return {
+      payPrice: '',
+      goodsName: "",
       aliPayUrl:''
     };
   },
@@ -83,19 +85,13 @@ export default {
           src: '//gw.alipayobjects.com/as/g/h5-lib/alipayjsapi/3.1.1/alipayjsapi.inc.min.js'
          },
           {
-          src: '/ishare-payment/baidu-statistics/index.js'
+          src: process.env.static_url + '/ishare-payment/baidu-statistics/index.js'
          }
     ]
     };
     }
   },
   computed:{
-    payPrice:function(){
-      return this.$route.query.payPrice;
-    },
-    goodsName:function(){
-      return this.$route.query.goodsName;
-    },
     orderNo:function(){
       return this.$route.query.orderNo;
     },
@@ -110,8 +106,8 @@ export default {
     }
   },
   mounted(){
+     this.getOrderInfo();    
      this.confirmPayment();
-    // this.getOrderInfo();    
   },
   methods:{
     async getOrderInfo(){
@@ -123,6 +119,7 @@ export default {
              this.goodsName = data.goodsName;
            }else{
              console.log(code,data,message);
+             this.$toast.error(message);
            }
       }catch(err){  
          this.$toast.error(err.message);

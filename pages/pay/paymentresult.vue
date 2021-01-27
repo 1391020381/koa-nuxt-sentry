@@ -1,54 +1,54 @@
 <template>
-<div  class="payment">
-       <div class="payment-title">
-            <template v-if="orderInfo.orderStatus == 2">
-                 <span class="payment-title-icon success"></span>
-                <span class="payment-title-desc">支付成功</span>
-                <span class="payment-title-info">请在电脑网站完成后续操作</span>
-            </template>
-         <template v-if="orderInfo.orderStatus == 3">
-             <span class="payment-title-icon error"></span>
-             <span class="payment-title-desc">支付失败</span>
-         </template>
-     </div>
-<ul class="order-list">
-    <li class="list-item">
+  <div class="payment">
+    <div class="payment-title">
+      <template v-if="orderInfo.orderStatus == 2">
+        <span class="payment-title-icon success" />
+        <span class="payment-title-desc">支付成功</span>
+        <span class="payment-title-info">请在电脑网站完成后续操作</span>
+      </template>
+      <template v-if="orderInfo.orderStatus == 3">
+        <span class="payment-title-icon error" />
+        <span class="payment-title-desc">支付失败</span>
+      </template>
+    </div>
+    <ul class="order-list">
+      <li class="list-item">
         <span class="item-title">支付方式:</span>
-        <span class="item-desc" v-if="orderInfo.payType == 'wechat'">微信支付</span>
-       <span class="item-desc" v-if="orderInfo.payType == 'alipay'">支付宝支付</span>
-       
-    </li>
-    <li class="list-item">
+        <span v-if="orderInfo.payType == 'wechat'" class="item-desc">微信支付</span>
+        <span v-if="orderInfo.payType == 'alipay'" class="item-desc">支付宝支付</span>
+      </li>
+      <li class="list-item">
         <span class="item-title">订单金额:</span>
-        <span class="item-desc">¥ {{orderInfo.payPrice}}</span>
-    </li>
-    <li class="list-item orderTime">
+        <span class="item-desc">¥ {{ orderInfo.payPrice }}</span>
+      </li>
+      <li class="list-item orderTime">
         <span class="item-title">创建时间:</span>
-        <span class="item-desc">{{orderInfo.orderTime}}</span>
-    </li>
-    <li class="list-item">
+        <span class="item-desc">{{ orderInfo.orderTime }}</span>
+      </li>
+      <li class="list-item">
         <span class="item-title">商户单号:</span>
-        <span class="item-desc">{{orderInfo.payNo}}</span>
-    </li>
-    <li class="list-item">
+        <span class="item-desc">{{ orderInfo.payNo }}</span>
+      </li>
+      <li class="list-item">
         <span class="item-title">商品名称:</span>
-        <span class="item-desc">{{orderInfo.goodsName}}</span>
-    </li>
-</ul> 
-<div class="payment-info">
-    请截图保存订单详情，以便查询使用
-</div>
-
-    <div class="btn-wrap" v-if="orderInfo.orderStatus == 3">
-        <div class="payment-btn">重新支付</div>
+        <span class="item-desc">{{ orderInfo.goodsName }}</span>
+      </li>
+    </ul> 
+    <div class="payment-info">
+      请截图保存订单详情，以便查询使用
     </div>
 
-</div>
+    <div v-if="orderInfo.orderStatus == 3" class="btn-wrap">
+      <div class="payment-btn">
+        重新支付
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 // http://open-ishare.iask.com.cn/pay/qr?orderNo=B20210121112552M0C175&isAutoRenew=1
-import orderApi from "../../api/order" 
+import orderApi from "../../api/order"; 
 export default {
   data() {
     return {
@@ -108,14 +108,19 @@ export default {
     ]
     };
   },
+  computed:{
+    orderNo:function(){
+      return this.$route.query.orderNo;
+    }
+  },
   mounted(){
-      this.getOrderInfo()
+      this.getOrderInfo();
   },
   methods:{
      async getOrderInfo(){
       try{
-           const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo})
-           console.log(code,data,message)
+           const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo});
+           console.log(code,data,message);
            if(code==0){
               
               this.orderInfo = Object.assign({},{
@@ -125,20 +130,20 @@ export default {
                    orderTime:data.orderTime?this.formatDate(new Date(data.orderTime)):'',
                   payNo:data.payNo,
                   goodsName:data.goodsName
-              })
+              });
                if (data.goodsType == 1) {
-                        this.handleBaiduStatisticsPush('payFileResult', { payresult: 1, orderid: this.orderNo, orderpaytype: data.payType })
+                        this.handleBaiduStatisticsPush('payFileResult', { payresult: 1, orderid: this.orderNo, orderpaytype: data.payType });
                     }
                     if (data.goodsType == 2) {
-                        this.handleBaiduStatisticsPush('payVipResult', { payresult: 1, orderid: this.orderNo, orderpaytype: data.payType })
+                        this.handleBaiduStatisticsPush('payVipResult', { payresult: 1, orderid: this.orderNo, orderpaytype: data.payType });
                     }
            }else{
-             console.log(code,data,message)
-            this.$toast.error(message)
+             console.log(code,data,message);
+            this.$toast.error(message);
            }
       }catch(err){  
-           console.log(err)
-           this.$toast.error(err.message)
+           console.log(err);
+           this.$toast.error(err.message);
       }
       
     },
@@ -156,8 +161,8 @@ export default {
     return (myyear + "-" + mymonth + "-" + myweekday);//想要什么格式都可以随便自己拼
   },
   handleBaiduStatisticsPush(eventName,params){  // 需要添加 全局百度统计
-   console.log(eventName,params)
-    var temp = this.eventNameList[eventName]
+   console.log(eventName,params);
+    var temp = this.eventNameList[eventName];
     if(eventName == 'payFileResult'){
         params = Object.assign(temp, {payresult:params.payresult,orderid:params.orderNo,orderpaytype:params.orderpaytype});
     }
@@ -165,15 +170,10 @@ export default {
         params =  Object.assign(temp, {payresult:params.payresult,orderid:params.orderNo,orderpaytype:params.orderpaytype});
     }
     _hmt.push(['_trackCustomEvent',eventName,params]);
-    console.log('百度统计:',eventName,params)
+    console.log('百度统计:',eventName,params);
   }
-  },
-  computed:{
-    orderNo:function(){
-      return this.$route.query.orderNo
-    }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>

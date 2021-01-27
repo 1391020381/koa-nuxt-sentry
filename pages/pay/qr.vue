@@ -61,8 +61,6 @@ export default {
   },
   data() {
     return {
-      payPrice: '',
-      goodsName: "",
       aliPayUrl:''
     };
   },
@@ -92,6 +90,12 @@ export default {
     }
   },
   computed:{
+    payPrice:function(){
+      return this.$route.query.payPrice;
+    },
+    goodsName:function(){
+      return this.$route.query.goodsName;
+    },
     orderNo:function(){
       return this.$route.query.orderNo;
     },
@@ -106,8 +110,8 @@ export default {
     }
   },
   mounted(){
-     // this.confirmPayment();
-      this.getOrderInfo();    
+     this.confirmPayment();
+    // this.getOrderInfo();    
   },
   methods:{
     async getOrderInfo(){

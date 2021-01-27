@@ -22,7 +22,7 @@ import orderApi from "../../api/order";
 export default {
  async asyncData({req,query,$axios,$sentry,error,redirect}){
      try{
-         let source = req&&req.headers['user-agent'];
+        let source = req&&req.headers['user-agent'];
         let isWeChat = source.indexOf("MicroMessenger") != -1;
         var isAliPay = source.indexOf("AlipayClient") !== -1;
         if(!isWeChat&&!isAliPay){
@@ -34,8 +34,8 @@ export default {
            payType: isWeChat == true ? 'wechat' : 'alipay',
            host: process.env.host
          });
-     
-      console.log('scanOrderInfo:',code,data,message);
+        const orderInfoRestult = await $axios.$post(process.env.API_URL + orderApi.status,{orderNo:query.orderNo});
+        console.log('scanOrderInfo:',code,data,message);
          if(code == 0){
             if(data.needRedirect){
               console.log('重定向');
@@ -48,7 +48,9 @@ export default {
               nonceStr:data.nonceStr, 
               prepayId:data.prepayId, 
               paySign:data.paySign,
-              aliPayUrl:data.aliPayUrl
+              aliPayUrl:data.aliPayUrl,
+              payPrice: orderInfoRestult.data.payPrice,
+              goodsName: orderInfoRestult.data.goodsName,
             };
          }else{ // 上报
            $sentry.captureException(JSON.stringify({code,message}));
@@ -61,9 +63,6 @@ export default {
   },
   data() {
     return {
-      payPrice: '',
-      goodsName: "",
-      aliPayUrl:''
     };
   },
   head() {
@@ -106,31 +105,27 @@ export default {
     }
   },
   mounted(){   
-    this.confirmPayment();
-    this.$nextTick(()=>{
-          this.getOrderInfo(); 
-    });
-   
+    this.confirmPayment();   
   },
   methods:{
-    async getOrderInfo(){
-     console.log('getOrderInfo:',process.env.browserBaseURL);
-      try{
-           const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo});
-           if(code==0){
-             this.payPrice = data.payPrice/100;
-             this.goodsName = data.goodsName;
-           }else{
-             console.log(code,data,message);
-             this.$sentry.captureException(JSON.stringify(code,data,message));
-             this.$toast.error(message);
-           }
-      }catch(err){  
-         this.$toast.error(err.message);
-          this.$sentry.captureException(JSON.stringify({message:err.message,config:err.message}));
-      }
+    // async getOrderInfo(){
+    //  console.log('getOrderInfo:',process.env.browserBaseURL);
+    //   try{
+    //        const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo});
+    //        if(code==0){
+    //          this.payPrice = data.payPrice/100;
+    //          this.goodsName = data.goodsName;
+    //        }else{
+    //          console.log(code,data,message);
+    //          this.$sentry.captureException(JSON.stringify(code,data,message));
+    //          this.$toast.error(message);
+    //        }
+    //   }catch(err){  
+    //      this.$toast.error(err.message);
+    //       this.$sentry.captureException(JSON.stringify({message:err.message,config:err.message}));
+    //   }
       
-    },
+    // },
     confirmPayment(){
         console.log('confirmPayment',{appId:this.appId,timeStamp:this.timeStamp,nonceStr:this.nonceStr,prepayId:this.prepayId,paySign:this.paySign});
         if(this.isWeChat){

@@ -107,9 +107,7 @@ export default {
   },
   mounted(){
      this.getOrderInfo();    
-    //  this.$nextTick(()=>{  
-    //    this.confirmPayment();
-    //  });
+    this.confirmPayment();
   },
   methods:{
     async getOrderInfo(){
@@ -183,12 +181,13 @@ export default {
      if(this.isAutoRenew == '1'){ // 续费
          this.alipayRenewalPayment(this.aliPayUrl);
      }else{
-       const div = document.createElement('div');
+        this.$nextTick(()=>{  
+                  const div = document.createElement('div');
                  div.innerHTML = this.aliPayUrl;
                  document.body.appendChild(div);
                  document.forms [0].submit();
-     }
-      
+        });
+     } 
     },
     alipayRenewalPayment(orderStr){
         console.log('ap:',ap);

@@ -126,7 +126,7 @@ export default {
            }
       }catch(err){  
          this.$toast.error(err.message);
-          this.$sentry.captureException(JSON.stringify(err));
+          this.$sentry.captureException(JSON.stringify({message:err.message,config:err.message}));
       }
       
     },

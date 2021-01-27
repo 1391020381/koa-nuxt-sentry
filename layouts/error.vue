@@ -1,8 +1,12 @@
 <template>
   <div class="__nuxt-error-page">
     <div class="error">
-      <div class="code">{{error.code}}</div>
-      <div class="title">{{ error.message }}</div>
+      <div class="code">
+        {{ error.code }}
+      </div>
+      <div class="title">
+        {{ error.message }}
+      </div>
     </div>
   </div>
 </template>
@@ -16,10 +20,6 @@ export default {
       default: null
     }
   },
-  computed: {
-   
-   
-  },
   head () {
     return {
       title: this.message,
@@ -29,9 +29,13 @@ export default {
           content: 'width=device-width,initial-scale=1.0,minimum-scale=1.0'
         }
       ]
-    }
+    };
+  },
+  computed: {
+   
+   
   }
-}
+};
 </script>
 
 <style lang="less">

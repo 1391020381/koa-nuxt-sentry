@@ -107,7 +107,7 @@ export default {
   },
   mounted(){
      this.getOrderInfo();    
-     this.confirmPayment();
+    // this.confirmPayment();
   },
   methods:{
     async getOrderInfo(){
@@ -119,6 +119,7 @@ export default {
              this.goodsName = data.goodsName;
            }else{
              console.log(code,data,message);
+             this.$sentry.captureException(JSON.stringify(code,data,message));
              this.$toast.error(message);
            }
       }catch(err){  

@@ -49,8 +49,8 @@ export default {
               prepayId:data.prepayId, 
               paySign:data.paySign,
               aliPayUrl:data.aliPayUrl,
-              payPrice: orderInfoRestult.data.payPrice,
-              goodsName: orderInfoRestult.data.goodsName,
+              payPrice: orderInfoRestult.code == 0 ?orderInfoRestult.data.payPrice/100:'',
+              goodsName: orderInfoRestult.code == 0 ?orderInfoRestult.data.goodsName:'',
             };
          }else{ // 上报
            $sentry.captureException(JSON.stringify({code,message}));

@@ -106,10 +106,8 @@ export default {
     }
   },
   mounted(){
-      this.confirmPayment();
-      this.getOrderInfo();
-    
-      
+     // this.confirmPayment();
+      this.getOrderInfo();    
   },
   methods:{
     async getOrderInfo(){

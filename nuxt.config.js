@@ -154,6 +154,19 @@ module.exports = {
     /*
    ** 您可以在这里扩展webpack配置
   */
+ extractCSS: true,
+ optimization: {
+   splitChunks: {
+     cacheGroups: {
+       styles: {
+         name: 'styles',
+         test: /\.(css|vue)$/,
+         chunks: 'all',
+         enforce: true
+       }
+     }
+   }
+ },
     extend(config, { isDev, isClient }) {
       console.log('isDev:', isDev, isClient);
       if (isClient && !isDev) {

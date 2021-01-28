@@ -29,14 +29,13 @@ export default {
           error({ statusCode: 500,message:"请使用微信或支付宝支付" });
         }
          const { code,data,message } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
-           orderNo: query.orderNo,
+           orderNo: query.orderNo + 1111,
            code: query.code,
            payType: isWeChat == true ? 'wechat' : 'alipay',
            host: process.env.host
          });
         const orderInfoRestult = await $axios.$post(process.env.API_URL + orderApi.status,{orderNo:query.orderNo});
         console.log('scanOrderInfo:',code,data,message);
-         if(code == 0){
             if(data.needRedirect){
               console.log('重定向');
               redirect(data.returnUrl);
@@ -49,16 +48,13 @@ export default {
               prepayId:data.prepayId, 
               paySign:data.paySign,
               aliPayUrl:data.aliPayUrl,
-              payPrice: orderInfoRestult.code == 0 ?orderInfoRestult.data.payPrice/100:'',
-              goodsName: orderInfoRestult.code == 0 ?orderInfoRestult.data.goodsName:'',
+              payPrice: orderInfoRestult.data.payPrice/100,
+              goodsName: orderInfoRestult.data.goodsName,
             };
-         }else{ // 上报
-           $sentry.captureException(JSON.stringify({code,message}));
-           error({ statusCode: 500, code,message });
-         }
+        
      }catch(err){
-      $sentry.captureException(error);
-      error({ statusCode: 500, code:err.code,message:err.message });
+      $sentry.captureException(JSON.stringify(error));
+      error({ statusCode: 500, code:err.data.code,message:err.data.message });
      }
   },
   data() {
@@ -108,24 +104,6 @@ export default {
     this.confirmPayment();   
   },
   methods:{
-    // async getOrderInfo(){
-    //  console.log('getOrderInfo:',process.env.browserBaseURL);
-    //   try{
-    //        const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo});
-    //        if(code==0){
-    //          this.payPrice = data.payPrice/100;
-    //          this.goodsName = data.goodsName;
-    //        }else{
-    //          console.log(code,data,message);
-    //          this.$sentry.captureException(JSON.stringify(code,data,message));
-    //          this.$toast.error(message);
-    //        }
-    //   }catch(err){  
-    //      this.$toast.error(err.message);
-    //       this.$sentry.captureException(JSON.stringify({message:err.message,config:err.message}));
-    //   }
-      
-    // },
     confirmPayment(){
         console.log('confirmPayment',{appId:this.appId,timeStamp:this.timeStamp,nonceStr:this.nonceStr,prepayId:this.prepayId,paySign:this.paySign});
         if(this.isWeChat){

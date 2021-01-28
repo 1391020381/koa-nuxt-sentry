@@ -66,7 +66,8 @@ module.exports = {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '~/plugins/vconsole.js', ssr: false }
+    { src: '~/plugins/vconsole.js', ssr: false },
+    { src: '~/plugins/axios.js', ssr: true }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -122,14 +123,14 @@ module.exports = {
       console.log('isDev:', isDev, isClient);
       if (isClient && !isDev) {
         config.devtool = 'source-map';
-        config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment';
+        config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment/';
         const release = pkg.name + '-' + pkg.version;
         console.log('release', release);
         const SentryPlugin = require('@sentry/webpack-plugin');
         config.plugins.push(new SentryPlugin({
           include: '.nuxt/dist/', // 要上传的文件夹
           release,
-          configFile: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre'?'.dev-sentryclirc':'.sentryclirc',
+          configFile:(process.env.NODE_ENV != 'prod'&&process.env.NODE_ENV!='pre')?'.dev-sentryclirc':'.sentryclirc',
           urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
         }));
       }

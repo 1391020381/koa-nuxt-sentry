@@ -121,8 +121,6 @@ export default {
       try{
            const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo});
            console.log(code,data,message);
-           if(code==0){
-              
               this.orderInfo = Object.assign({},{
                    orderStatus:data.orderStatus,
                    payType:data.payType,
@@ -137,13 +135,10 @@ export default {
                     if (data.goodsType == 2) {
                         this.handleBaiduStatisticsPush('payVipResult', { payresult: 1, orderid: this.orderNo, orderpaytype: data.payType });
                     }
-           }else{
-             console.log(code,data,message);
-            this.$toast.error(message);
-           }
       }catch(err){  
            console.log(err);
-           this.$toast.error(err.message);
+           this.$toast.error(err.data.message);
+           this.$sentry.captureException(JSON.stringify(err));
       }
       
     },

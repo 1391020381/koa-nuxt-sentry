@@ -156,19 +156,19 @@ module.exports = {
   */
     extend(config, { isDev, isClient }) {
       console.log('isDev:', isDev, isClient);
-      // if (isClient && !isDev) {
-      //   config.devtool = 'source-map';
-      //   config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment/';
-      //   const release = pkg.name + '-' + pkg.version;
-      //   console.log('release', release);
-      //   const SentryPlugin = require('@sentry/webpack-plugin');
-      //   config.plugins.push(new SentryPlugin({
-      //     include: '.nuxt/dist/', // 要上传的文件夹
-      //     release,
-      //     configFile:(process.env.NODE_ENV != 'prod'&&process.env.NODE_ENV!='pre')?'.dev-sentryclirc':'.sentryclirc',
-      //     urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
-      //   }));
-      // }
+      if (isClient && !isDev) {
+       // config.devtool = 'source-map';
+        config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment/';
+       // const release = pkg.name + '-' + pkg.version;
+        // console.log('release', release);
+        // const SentryPlugin = require('@sentry/webpack-plugin');
+        // config.plugins.push(new SentryPlugin({
+        //   include: '.nuxt/dist/', // 要上传的文件夹
+        //   release,
+        //   configFile:(process.env.NODE_ENV != 'prod'&&process.env.NODE_ENV!='pre')?'.dev-sentryclirc':'.sentryclirc',
+        //   urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
+        // }));
+      }
       if (isDev) {
         config.module.rules.push({
           enforce: "pre",

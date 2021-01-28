@@ -53,6 +53,7 @@ export default {
             };
         
      }catch(err){
+      console.log('err:',JSON.stringify(err));
       $sentry.captureException(JSON.stringify(error));
       error({ statusCode: 500, code:err.data.code,message:err.data.message });
      }

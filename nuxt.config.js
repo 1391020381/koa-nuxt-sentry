@@ -1,4 +1,4 @@
-const  path  = require('path');
+
 const { format, transports }  = require('winston') ;
 const { combine, timestamp,label,prettyPrint } = format;
 require('winston-daily-rotate-file');
@@ -107,7 +107,7 @@ module.exports = {
             format:'YYYY-MM-DD HH:mm:ss'
         })),
           level: 'info',
-          filename: path.join(__dirname, './data/logs/ishare-payment-system/%DATE%.log'),
+          filename: '/data/logs/ishare-payment-system/%DATE%.log',
           maxsize: 5 * 1024 * 1024  // 这个是限制日志文件的大小
         }),
         new transports.DailyRotateFile({
@@ -115,7 +115,7 @@ module.exports = {
             format:'YYYY-MM-DD HH:mm:ss'
         })),
           level: 'error',
-          filename:  path.join(__dirname, './data/logs/ishare-payment-system/error-%DATE%.log'),
+          filename:  '/data/logs/ishare-payment-system/error-%DATE%.log',
           maxsize: 5 * 1024 * 1024
         })
       ]
@@ -180,7 +180,7 @@ module.exports = {
     }
   },
   server: {
-    port: 8089, // default: 3000
+    port: 3333, // default: 3000
     host: '0.0.0.0' // default: localhost
   }
 };

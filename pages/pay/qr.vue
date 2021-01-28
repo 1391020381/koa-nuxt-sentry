@@ -54,7 +54,7 @@ export default {
         
      }catch(err){
       console.log('err:',err);
-      $sentry.captureException(JSON.stringify(error));
+      $sentry.captureException(error);
       error({ statusCode: 500, code:err.data.code,message:err.data.message });
      }
   },
@@ -139,8 +139,7 @@ export default {
                     }
                 });
            }catch(err){
-              console.log('onBridgeReady',JSON.stringify(err));
-              that.$sentry.captureException(JSON.stringify({tag:'onBridgeReady',err}));
+              that.$sentry.captureException({tag:'onBridgeReady',err});
            }
         }
         if (typeof WeixinJSBridge == "undefined") {

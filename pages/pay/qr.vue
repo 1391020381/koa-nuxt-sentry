@@ -28,14 +28,14 @@ export default {
         if(!isWeChat&&!isAliPay){
           error({ statusCode: 500,message:"请使用微信或支付宝支付" });
         }
-         const { code,data,message } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
+         const { data, } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
            orderNo: query.orderNo,
            code: query.code,
            payType: isWeChat == true ? 'wechat' : 'alipay',
            host: process.env.host
          });
         const orderInfoRestult = await $axios.$post(process.env.API_URL + orderApi.status,{orderNo:query.orderNo});
-        console.log('scanOrderInfo:',code,data,message);
+     //   console.log('scanOrderInfo:',code,data,message);
             if(data.needRedirect){
               console.log('重定向');
               redirect(data.returnUrl);

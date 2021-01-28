@@ -1,3 +1,8 @@
+const  path  = require('path');
+const { format, transports }  = require('winston') ;
+const { combine, timestamp,label,prettyPrint } = format;
+require('winston-daily-rotate-file');
+
 const staticUrlList = {
   'local': '',
   'dev': "//dev-static3.iask.cn",
@@ -79,6 +84,7 @@ module.exports = {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    'nuxt-winston-log',
     '@nuxtjs/sentry',
     '@nuxtjs/axios',
     '@nuxtjs/toast',
@@ -86,6 +92,35 @@ module.exports = {
       filename: getFilename()
     }]
   ],
+  winstonLog: {
+    useDefaultLogger: false,
+    loggerOptions: {
+      format: combine(
+        label({ label: 'ishare-payment-system' }),
+        timestamp(),
+        prettyPrint()
+      ),
+      transports: [
+        new transports.Console(),
+        new transports.DailyRotateFile({
+          format: combine(timestamp({
+            format:'YYYY-MM-DD HH:mm:ss'
+        })),
+          level: 'info',
+          filename: path.join(__dirname, './data/logs/ishare-payment-system/%DATE%.log'),
+          maxsize: 5 * 1024 * 1024  // 这个是限制日志文件的大小
+        }),
+        new transports.DailyRotateFile({
+          format: combine(timestamp({
+            format:'YYYY-MM-DD HH:mm:ss'
+        })),
+          level: 'error',
+          filename:  path.join(__dirname, './data/logs/ishare-payment-system/error-%DATE%.log'),
+          maxsize: 5 * 1024 * 1024
+        })
+      ]
+    }
+  },
   sentry: {
     dsn: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre' ? "http://ed6367bedee1470da3e967bf1ba58710@192.168.1.199:9000/5" : "http://9cb51b12168c4e3dacc86d62a9f4aa58@sentry-ishare.iask.com.cn/3", // Enter your project's DSN here
     config: {

@@ -1,6 +1,6 @@
 {
   "name": "ishare-payment-system",
-  "version": "20211281136",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "stop": "pm2 stop pm2.json",

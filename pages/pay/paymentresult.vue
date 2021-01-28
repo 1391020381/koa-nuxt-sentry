@@ -138,7 +138,7 @@ export default {
       }catch(err){  
            console.log(err);
            this.$toast.error(err.data.message);
-           this.$sentry.captureException(err);
+          // this.$sentry.captureException(err);
       }
       
     },

@@ -20,7 +20,7 @@
 <script>
 import orderApi from "../../api/order"; 
 export default {
- async asyncData({req,query,$axios,$sentry,error,redirect}){
+ async asyncData({req,query,$axios,error,redirect}){
      try{
         let source = req&&req.headers['user-agent'];
         let isWeChat = source.indexOf("MicroMessenger") != -1;
@@ -54,7 +54,7 @@ export default {
         
      }catch(err){
       console.log('err:',err);
-      $sentry.captureException(error);
+     // $sentry.captureException(error);
       error({ statusCode: 500, code:err.data.code,message:err.data.message });
      }
   },
@@ -139,7 +139,7 @@ export default {
                     }
                 });
            }catch(err){
-              that.$sentry.captureException({tag:'onBridgeReady',err});
+             // that.$sentry.captureException({tag:'onBridgeReady',err});
            }
         }
         if (typeof WeixinJSBridge == "undefined") {

@@ -173,7 +173,6 @@ module.exports = {
       if (!isDev) {
        config.devtool = 'source-map';
         config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment/';
-        const release = release;
         const SentryPlugin = require('@sentry/webpack-plugin');
         config.plugins.push(new SentryPlugin({
           include: '.nuxt/dist/', // 要上传的文件夹

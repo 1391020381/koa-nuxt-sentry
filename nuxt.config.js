@@ -94,6 +94,7 @@ module.exports = {
     }]
   ],
   winstonLog: {
+    autoCreateLogPath:true,
     useDefaultLogger: false,
     loggerOptions: {
       format: combine(

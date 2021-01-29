@@ -114,6 +114,7 @@ export default {
     }
   },
   mounted(){
+      this.$sentry.captureException(new Error('example'));
       this.getOrderInfo();
   },
   methods:{

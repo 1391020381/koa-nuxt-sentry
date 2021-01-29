@@ -1,6 +1,7 @@
 {
   "name": "ishare-payment-system",
-  "version": "1.0.1",
+  "version": "1.0.0",
+  "ishare-payment-system-vsersion": "20211291515",
   "private": true,
   "scripts": {
     "stop": "pm2 stop pm2.json",
@@ -21,6 +22,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.12.5",
     "@nuxtjs/dotenv": "^1.4.1",
+    "@nuxtjs/sentry": "^5.0.0",
     "@nuxtjs/toast": "^3.3.1",
     "core-js": "^3.8.2",
     "koa": "^2.13.1",

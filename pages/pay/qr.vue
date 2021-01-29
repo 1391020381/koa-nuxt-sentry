@@ -20,7 +20,8 @@
 <script>
 import orderApi from "../../api/order"; 
 export default {
- async asyncData({req,query,$axios,error,redirect}){
+ async asyncData({req,query,$axios,error,redirect,$sentry}){
+   $sentry.captureException(1111);
      try{
         let source = req&&req.headers['user-agent'];
         let isWeChat = source.indexOf("MicroMessenger") != -1;

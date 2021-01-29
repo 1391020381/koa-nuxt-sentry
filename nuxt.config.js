@@ -11,7 +11,9 @@ const staticUrlList = {
   'pre': "//pre-static3.iask.cn",
   'prod': "//static3.iask.cn"
 };
-// const pkg = require('./package.json');
+const pkg = require('./package.json');
+const release = pkg.name + '-' + pkg['ishare-payment-system-vsersion'];
+
 function getFilename() {
   let filename = '';
   let NODE_ENV = process.env.NODE_ENV;
@@ -39,7 +41,6 @@ function getFilename() {
 }
 
 module.exports = {
-  // buildDir: 'isharePayment',
   dev: process.env.NODE_ENV == 'local',
   loading: {
     color: '#f25125',
@@ -86,13 +87,21 @@ module.exports = {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     'nuxt-winston-log',
-    // '@nuxtjs/sentry',
+    '@nuxtjs/sentry',
     '@nuxtjs/axios',
     '@nuxtjs/toast',
     ['@nuxtjs/dotenv', {
       filename: getFilename()
     }]
   ],
+   sentry: { // http://ab87976d45d8457dbe05c7b795de0dcd@192.168.1.199:9000/7
+    dsn: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre' ? "http://ab87976d45d8457dbe05c7b795de0dcd@192.168.1.199:9000/7" : "", // Enter your project's DSN here
+    config: {
+      release: release,
+      publishRelease: true,
+      sourceMapStyle:'source-map'
+    }, 
+  },
   winstonLog: {
     autoCreateLogPath:true,
     useDefaultLogger: false,
@@ -123,15 +132,6 @@ module.exports = {
       ]
     }
   },
-  // sentry: {
-  //   dsn: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre' ? "http://ed6367bedee1470da3e967bf1ba58710@192.168.1.199:9000/5" : "http://9cb51b12168c4e3dacc86d62a9f4aa58@sentry-ishare.iask.com.cn/3", // Enter your project's DSN here
-  //   config: {
-  //     release: pkg.name + '-' + pkg.version,
-  //     publishRelease: true,
-  //     clientIntegrations: { RewriteFrames: {}, },
-  //     serverIntegrations: { RewriteFrames: {}, }
-  //   }, // Additional config
-  // },
   toast: {
     position: 'top-center',
     register: [
@@ -155,9 +155,9 @@ module.exports = {
     /*
    ** 您可以在这里扩展webpack配置
   */
- extractCSS: true,
- optimization: {
-   splitChunks: {
+   extractCSS: true,
+   optimization: {
+      splitChunks: {
      cacheGroups: {
        styles: {
          name: 'styles',
@@ -167,23 +167,21 @@ module.exports = {
        }
      }
    }
- },
+   },
     extend(config, { isDev, isClient }) {
       console.log('isDev:', isDev, isClient);
-      if (isClient && !isDev) {
-       // config.devtool = 'source-map';
+      if (!isDev) {
+       config.devtool = 'source-map';
         config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment/';
-       // const release = pkg.name + '-' + pkg.version;
-        // console.log('release', release);
-        // const SentryPlugin = require('@sentry/webpack-plugin');
-        // config.plugins.push(new SentryPlugin({
-        //   include: '.nuxt/dist/', // 要上传的文件夹
-        //   release,
-        //   configFile:(process.env.NODE_ENV != 'prod'&&process.env.NODE_ENV!='pre')?'.dev-sentryclirc':'.sentryclirc',
-        //   urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
-        // }));
-      }
-      if (isDev) {
+        const release = release;
+        const SentryPlugin = require('@sentry/webpack-plugin');
+        config.plugins.push(new SentryPlugin({
+          include: '.nuxt/dist/', // 要上传的文件夹
+          release,
+          configFile:(process.env.NODE_ENV != 'prod'&&process.env.NODE_ENV!='pre')?'.dev-sentryclirc':'.sentryclirc',
+          urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
+        }));
+      }else{
         config.module.rules.push({
           enforce: "pre",
           test: /\.(js|vue)$/,

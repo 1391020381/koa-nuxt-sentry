@@ -28,7 +28,7 @@ export default {
         if(!isWeChat&&!isAliPay){
           error({ statusCode: 500,message:"请使用微信或支付宝支付" });
         }
-         const { data, } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
+         const { data } = await $axios.$post(process.env.API_URL + orderApi.scanOrderInfo,{
            orderNo: query.orderNo,
            code: query.code,
            payType: isWeChat == true ? 'wechat' : 'alipay',
@@ -55,7 +55,7 @@ export default {
      }catch(err){
       console.log('err:',err);
      // $sentry.captureException(error);
-      error({ statusCode: 500, code:err.data.code,message:err.data.message });
+      error({ statusCode: 500, code:err.data.code,message:err.data.code =='412005'?'该订单已经支付!':err.data.message });
      }
   },
   data() {

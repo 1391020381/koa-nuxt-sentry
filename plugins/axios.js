@@ -7,7 +7,7 @@ export default function ({ $axios,$winstonLog}) {
                 url:config.url,
                 method:config.method,
                 params:config.params,
-                data:config.datay
+                data:config.data
             });
           }
       });
@@ -16,7 +16,8 @@ export default function ({ $axios,$winstonLog}) {
         if(response.data.code!=0){
             if ($winstonLog) {
                 $winstonLog.error(
-                {
+                {   
+                    config:response.config,
                     data:response.data,
                     status:response.status,
                     statusText:response.statusText
@@ -26,6 +27,7 @@ export default function ({ $axios,$winstonLog}) {
         }else{
             if ($winstonLog) {
                 $winstonLog.info({
+                    config:response.config,
                     data:response.data,
                     status:response.status,
                     statusText:response.statusText

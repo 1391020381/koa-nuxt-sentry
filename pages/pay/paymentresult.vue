@@ -119,7 +119,7 @@ export default {
   methods:{
      async getOrderInfo(){
       try{
-           const {code,data,message} = await this.$axios.$post(process.env.browserBaseURL + orderApi.status,{orderNo: this.orderNo});
+           const {code,data,message} = await this.$axios.$post(orderApi.status,{orderNo: this.orderNo});
            console.log(code,data,message);
               this.orderInfo = Object.assign({},{
                    orderStatus:data.orderStatus,

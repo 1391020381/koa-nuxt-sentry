@@ -1,5 +1,5 @@
 export default function ({ $axios,$winstonLog}) {
-    
+    $axios.defaults.baseURL = process.server?process.env.API_URL:'/openapi';
     $axios.onRequest(config => {
        // console.log('onRequest:',config);
         if ($winstonLog) {

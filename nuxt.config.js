@@ -143,12 +143,11 @@ module.exports = {
     ]
   },
   axios: {
+    proxy:true,
     retry: { retries: 3 }
   },
-  publicRuntimeConfig: {
-    axios: {
-
-    }
+  proxy:{
+    '/openapi':'http://dev-open-ishare.iask.com.cn'
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

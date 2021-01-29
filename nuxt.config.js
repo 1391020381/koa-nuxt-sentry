@@ -12,7 +12,7 @@ const staticUrlList = {
   'prod': "//static3.iask.cn"
 };
 const pkg = require('./package.json');
-const release = pkg.name + '-' + pkg['ishare-payment-system-vsersion'];
+const release = pkg.name + '-' + pkg['ishare-payment-system-version'];
 
 function getFilename() {
   let filename = '';
@@ -170,17 +170,18 @@ module.exports = {
    },
     extend(config, { isDev, isClient }) {
       console.log('isDev:', isDev, isClient);
-      if (!isDev) {
+      if (isClient&&!isDev) {
        config.devtool = 'source-map';
         config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment/';
         const SentryPlugin = require('@sentry/webpack-plugin');
         config.plugins.push(new SentryPlugin({
           include: '.nuxt/dist/', // 要上传的文件夹
           release,
-          configFile:(process.env.NODE_ENV != 'prod'&&process.env.NODE_ENV!='pre')?'.dev-sentryclirc':'.sentryclirc',
+         configFile:(process.env.NODE_ENV != 'prod'&&process.env.NODE_ENV!='pre')?'.dev-sentryclirc':'.sentryclirc',
           urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
         }));
-      }else{
+      }
+      if(isDev){
         config.module.rules.push({
           enforce: "pre",
           test: /\.(js|vue)$/,

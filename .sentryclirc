@@ -1,7 +1,7 @@
 [defaults]
 url = http://sentry-ishare.iask.com.cn/
 org = sentry
-project = ishare-payment-system
+project = koa-nuxt-sentry
 [auth]
 # 身份令牌 在sentry服务端 setting-》accout->api->auth Tokens 创建一个新的就好
 # 注意这里要有project:write 权限 下面我会给出具体页面，看着上面路径进去就好。

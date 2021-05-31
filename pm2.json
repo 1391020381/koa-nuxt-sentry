@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "ishare-payment-system",
+      "name": "koa-nuxt-sentry",
       "script": "./server/index.js",
       "cwd": "./",
       "watch": true,
@@ -15,8 +15,8 @@
       "exec_mode": "cluster_mode",
       "min_uptime": "60s",
       "instances": 3,
-      "error_file": "/data/logs/ishare-payment/app-err.log",
-      "out_file": "/data/logs/ishare-payment/app-out.log",
+      "error_file": "/data/logs/koa-nuxt-sentry/app-err.log",
+      "out_file": "/data/logs/koa-nuxt-sentry/app-out.log",
       "merge_logs": true,
       "log_date_format": "YYYY-MM-DD HH:mm:ss",
       "max_restarts": 30,

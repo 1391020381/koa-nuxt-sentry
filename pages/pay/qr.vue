@@ -3,18 +3,9 @@
 </template>
 
 <script>
-import orderApi from "../../api/order";
 export default {
-  async asyncData({ req, query, $axios, error, redirect, $sentry }) {
-    try {
-    } catch (err) {
-      error({
-        statusCode: 500,
-        code: err.data.code,
-        message: err.data.message,
-      });
-    }
-  },
+  // eslint-disable-next-line
+  async asyncData({ req, query, $axios, error, redirect, $sentry }) {},
   data() {
     return {};
   },

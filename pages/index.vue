@@ -3,7 +3,15 @@
 </template>
 
 <script>
-export default {};
+export default {
+  // eslint-disable-next-line
+  async asyncData({ req, query, $axios, error, redirect, $sentry }) {
+    // console.log(window);
+  },
+  data() {
+    return {};
+  },
+};
 </script>
 
 <style  scoped>

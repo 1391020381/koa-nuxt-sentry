@@ -1,7 +1,7 @@
 
 const path = require('path');
-const { format, transports }  = require('winston') ;
-const { combine, timestamp,label,prettyPrint } = format;
+const { format, transports } = require('winston');
+const { combine, timestamp, label, prettyPrint } = format;
 require('winston-daily-rotate-file');
 
 const staticUrlList = {
@@ -12,7 +12,7 @@ const staticUrlList = {
   'prod': "//static3.iask.cn"
 };
 const pkg = require('./package.json');
-const release = pkg.name + '-' + pkg['ishare-payment-system-version'];
+const release = pkg.name + '-' + pkg['version'];
 
 function getFilename() {
   let filename = '';
@@ -49,7 +49,7 @@ module.exports = {
   telemetry: false,
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: '订单详情',
+    title: 'koa-nuxt-sentry',
     htmlAttrs: {
       lang: 'zh-CN'
     },
@@ -62,7 +62,7 @@ module.exports = {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ],
     script: [
-      { src: staticUrlList[process.env.NODE_ENV] + '/ishare-payment/rem/index.js', type: 'text/javascript', charset: 'utf-8' }
+
     ]
   },
 
@@ -94,20 +94,20 @@ module.exports = {
       filename: getFilename()
     }]
   ],
-   sentry: { // http://ab87976d45d8457dbe05c7b795de0dcd@192.168.1.199:9000/7
+  sentry: { // http://ab87976d45d8457dbe05c7b795de0dcd@192.168.1.199:9000/7
     dsn: process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre' ? "http://ab87976d45d8457dbe05c7b795de0dcd@192.168.1.199:9000/7" : "", // Enter your project's DSN here
     config: {
       release: release,
       publishRelease: true,
-      sourceMapStyle:'source-map'
-    }, 
+      sourceMapStyle: 'source-map'
+    },
   },
   winstonLog: {
-    autoCreateLogPath:true,
+    autoCreateLogPath: true,
     useDefaultLogger: false,
     loggerOptions: {
       format: combine(
-        label({ label: 'ishare-payment-system' }),
+        label({ label: 'koa-nuxt-system' }),
         timestamp(),
         prettyPrint()
       ),
@@ -115,18 +115,18 @@ module.exports = {
         new transports.Console(),
         new transports.DailyRotateFile({
           format: combine(timestamp({
-            format:'YYYY-MM-DD HH:mm:ss'
-        })),
+            format: 'YYYY-MM-DD HH:mm:ss'
+          })),
           level: 'info',
-          filename: process.env.NODE_ENV == 'local'?path.join(__dirname,'/data/logs/ishare-payment-system/%DATE%.log'):'/data/logs/ishare-payment-system/%DATE%.log',
+          filename: process.env.NODE_ENV == 'local' ? path.join(__dirname, '/data/logs/koa-nuxt-sentry/%DATE%.log') : '/data/logs/koa-nuxt-sentry/%DATE%.log',
           maxsize: 5 * 1024 * 1024  // 这个是限制日志文件的大小
         }),
         new transports.DailyRotateFile({
           format: combine(timestamp({
-            format:'YYYY-MM-DD HH:mm:ss'
-        })),
+            format: 'YYYY-MM-DD HH:mm:ss'
+          })),
           level: 'error',
-          filename:  process.env.NODE_ENV == 'local'?path.join(__dirname,'/data/logs/ishare-payment-system/error-%DATE%.log'):'/data/logs/ishare-payment-system/error-%DATE%.log',
+          filename: process.env.NODE_ENV == 'local' ? path.join(__dirname, '/data/logs/koa-nuxt-sentry/error-%DATE%.log') : '/data/logs/koa-nuxt-sentry/error-%DATE%.log',
           maxsize: 5 * 1024 * 1024
         })
       ]
@@ -144,44 +144,44 @@ module.exports = {
     ]
   },
   axios: {
-    proxy:true,
+    proxy: true,
     retry: { retries: 3 }
   },
-  proxy:{
-    '/openapi':'http://dev-open-ishare.iask.com.cn'
+  proxy: {
+    '/openapi': 'http://dev-open-ishare.iask.com.cn'
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     /*
    ** 您可以在这里扩展webpack配置
   */
-   extractCSS: true,
-   optimization: {
+    extractCSS: true,
+    optimization: {
       splitChunks: {
-     cacheGroups: {
-       styles: {
-         name: 'styles',
-         test: /\.(css|vue)$/,
-         chunks: 'all',
-         enforce: true
-       }
-     }
-   }
-   },
+        cacheGroups: {
+          styles: {
+            name: 'styles',
+            test: /\.(css|vue)$/,
+            chunks: 'all',
+            enforce: true
+          }
+        }
+      }
+    },
     extend(config, { isDev, isClient }) {
       console.log('isDev:', isDev, isClient);
-      if (isClient&&!isDev) {
-       config.devtool = 'source-map';
-        config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/ishare-payment/';
+      if (isClient && !isDev) {
+        config.devtool = 'source-map';
+        config.output.publicPath = staticUrlList[process.env.NODE_ENV] + '/koa-nuxt-sentry/';
         const SentryPlugin = require('@sentry/webpack-plugin');
         config.plugins.push(new SentryPlugin({
           include: '.nuxt/dist/', // 要上传的文件夹
           release,
-         configFile:(process.env.NODE_ENV != 'prod'&&process.env.NODE_ENV!='pre')?'.dev-sentryclirc':'.sentryclirc',
+          configFile: (process.env.NODE_ENV != 'prod' && process.env.NODE_ENV != 'pre') ? '.dev-sentryclirc' : '.sentryclirc',
           urlPrefix: '~/_nuxt/' // ~/为网站根目录，后续路径须对应source
         }));
       }
-      if(isDev){
+      if (isDev) {
         config.module.rules.push({
           enforce: "pre",
           test: /\.(js|vue)$/,

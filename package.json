@@ -1,7 +1,6 @@
 {
-  "name": "ishare-payment-system",
+  "name": "koa-nuxt-sentry",
   "version": "1.0.0",
-  "ishare-payment-system-version": "20211291703",
   "private": true,
   "scripts": {
     "stop": "pm2 stop pm2.json",
@@ -34,6 +33,7 @@
   },
   "devDependencies": {
     "@nuxtjs/proxy": "^2.1.0",
+    "@sentry/cli": "^1.65.0",
     "@sentry/webpack-plugin": "^1.14.0",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",

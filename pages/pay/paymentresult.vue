@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import orderApi from "../../api/order";
 export default {
   data() {},
   head() {
